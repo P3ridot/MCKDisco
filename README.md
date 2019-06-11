@@ -1,0 +1,2 @@
+# MCKDisco
+Plugin na discozbroje
