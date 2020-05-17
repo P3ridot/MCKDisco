@@ -1,6 +1,6 @@
 package me.peridot.mckdisco.inventory;
 
-import api.peridot.periapi.utils.ColorUtil;
+import api.peridot.periapi.utils.simple.ColorUtil;
 import me.peridot.mckdisco.data.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

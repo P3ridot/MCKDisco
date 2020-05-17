@@ -1,6 +1,6 @@
 package me.peridot.mckdisco.listener;
 
-import api.peridot.periapi.langapi.Replacement;
+import api.peridot.periapi.utils.replacements.Replacement;
 import me.peridot.mckdisco.MCKDisco;
 import me.peridot.mckdisco.data.Config;
 import me.peridot.mckdisco.enums.DiscoType;

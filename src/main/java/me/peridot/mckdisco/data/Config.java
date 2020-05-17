@@ -1,7 +1,7 @@
 package me.peridot.mckdisco.data;
 
+import api.peridot.periapi.configuration.langapi.LangAPI;
 import api.peridot.periapi.items.ItemParser;
-import api.peridot.periapi.langapi.LangAPI;
 import me.peridot.mckdisco.MCKDisco;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;

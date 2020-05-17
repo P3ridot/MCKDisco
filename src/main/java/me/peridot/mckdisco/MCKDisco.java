@@ -6,7 +6,7 @@ import me.peridot.mckdisco.listener.InventoryClickListener;
 import me.peridot.mckdisco.listener.PlayerJoinListener;
 import me.peridot.mckdisco.scheduler.ColorScheduler;
 import me.peridot.mckdisco.scheduler.UpdateArmorScheduler;
-import bstats.bukkit.Metrics;
+import me.peridot.mckdisco.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

@@ -1,64 +1,59 @@
 package me.peridot.mckdisco.util;
 
-import api.peridot.periapi.packets.PacketSender;
-import api.peridot.periapi.packets.Reflections;
-import org.bukkit.Bukkit;
+import api.peridot.periapi.packets.Reflection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 public class EquipmentUtil {
 
-    public void setPlayerSlot(Player player, int slot, ItemStack item) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-        Class<?> packetClass = Reflections.getNMSClass("PacketPlayOutEntityEquipment");
-        Class<?> bukkitItemstackClass = Reflections.getBukkitClass("inventory.CraftItemStack");
-        Class<?> itemstackClass = Reflections.getNMSClass("ItemStack");
+    private final Class<?> packetPlayOutEntityEquipmentClass = Reflection.getMinecraftClass("PacketPlayOutEntityEquipment");
+    private final Reflection.ConstructorInvoker packetPlayOutEntityEquipmentConstructor;
 
-        Object packet = null;
+    private final Class<?> craftItemStackClass = Reflection.getCraftBukkitClass("inventory.CraftItemStack");
+    private final Class<?> itemStackClass = Reflection.getMinecraftClass("ItemStack");
+    private final Reflection.MethodInvoker itemStackMethod = Reflection.getMethod(craftItemStackClass, "asNMSCopy", ItemStack.class);
 
-        if (Reflections.server_version_number >= 13) {
-            Class<?> enumClass = Reflections.getNMSClass("EnumItemSlot");
+    private Class<?> enumItemSlotClass = null;
+    private Reflection.MethodInvoker enumItemSlotMethod = null;
 
-            Method m = bukkitItemstackClass.getMethod("asNMSCopy", ItemStack.class);
-            Method m2 = enumClass.getMethod("valueOf", String.class);
-            Object o = m.invoke(bukkitItemstackClass, item);
-            Object o2 = null;
 
-            if (slot == 0) o2 = m2.invoke(enumClass, "MAINHAND");
-            if (slot == 1) o2 = m2.invoke(enumClass, "OFFHAND");
-            if (slot == 2) o2 = m2.invoke(enumClass, "FEET");
-            if (slot == 3) o2 = m2.invoke(enumClass, "LEGS");
-            if (slot == 4) o2 = m2.invoke(enumClass, "CHEST");
-            if (slot == 5) o2 = m2.invoke(enumClass, "HEAD");
-
-            Constructor<?> packetConstructor = packetClass.getConstructor(int.class, enumClass, itemstackClass);
-            packet = packetConstructor.newInstance(player.getEntityId(), o2, o);
+    public EquipmentUtil() {
+        if (Reflection.serverVersionNumber >= 13) {
+            enumItemSlotClass = Reflection.getMinecraftClass("EnumItemSlot");
+            enumItemSlotMethod = Reflection.getMethod(enumItemSlotClass, "valueOf", String.class);
+            packetPlayOutEntityEquipmentConstructor = Reflection.getConstructor(packetPlayOutEntityEquipmentClass, int.class, enumItemSlotClass, itemStackClass);
         } else {
-            Method m = bukkitItemstackClass.getMethod("asNMSCopy", ItemStack.class);
-            Object o = m.invoke(bukkitItemstackClass, item);
+            packetPlayOutEntityEquipmentConstructor = Reflection.getConstructor(packetPlayOutEntityEquipmentClass, int.class, int.class, itemStackClass);
+        }
+    }
 
-            if (Reflections.server_version_number <= 8) {
+    public Object createEquipmentPacket(Player player, int slot, ItemStack item, boolean own) {
+        Object packet = null;
+        Object itemStack = itemStackMethod.invoke(craftItemStackClass, item);
+        if (enumItemSlotClass == null) {
+            if (Reflection.serverVersionNumber <= 8) {
                 if (slot == 1) {
                     slot = 0;
                 } else if (slot >= 2 && slot <= 5) {
-                    slot -= 1;
+                    slot -= 2;
                 } else if (slot > 5) {
                     slot = 0;
                 }
-            }
 
-            Constructor<?> packetConstructor = packetClass.getConstructor(int.class, int.class, itemstackClass);
-            packet = packetConstructor.newInstance(player.getEntityId(), slot, o);
-        }
-
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (!onlinePlayer.equals(player)) {
-                PacketSender.sendPacket(onlinePlayer, packet);
+                if(!own) slot += 1;
             }
+            packet = packetPlayOutEntityEquipmentConstructor.invoke(player.getEntityId(), slot, itemStack);
+        } else {
+            Object enumItemSlot = null;
+            if (slot == 0) enumItemSlot = enumItemSlotMethod.invoke(enumItemSlotClass, "MAINHAND");
+            else if (slot == 1) enumItemSlot = enumItemSlotMethod.invoke(enumItemSlotClass, "OFFHAND");
+            else if (slot == 2) enumItemSlot = enumItemSlotMethod.invoke(enumItemSlotClass, "FEET");
+            else if (slot == 3) enumItemSlot = enumItemSlotMethod.invoke(enumItemSlotClass, "LEGS");
+            else if (slot == 4) enumItemSlot = enumItemSlotMethod.invoke(enumItemSlotClass, "CHEST");
+            else if (slot == 5) enumItemSlot = enumItemSlotMethod.invoke(enumItemSlotClass, "HEAD");
+            packet = packetPlayOutEntityEquipmentConstructor.invoke(player.getEntityId(), enumItemSlot, itemStack);
         }
+        return packet;
     }
 
 }
