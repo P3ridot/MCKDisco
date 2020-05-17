@@ -15,6 +15,7 @@ public class ColorScheduler {
     public static int grayShadeCycle = 0;
 
     public static int policeCycle = 0;
+    public static int sharpPoliceCycle = 0;
     public static int redPolice = 255;
     public static int bluePolice = 0;
 
@@ -23,7 +24,7 @@ public class ColorScheduler {
     }
 
     public void start() {
-        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             //SMOOTH
             if (redSmooth > 0 && blueSmooth == 0) {
                 redSmooth -= 3;
@@ -54,23 +55,40 @@ public class ColorScheduler {
             }
 
             //POLICE
-            if (redPolice >= 255) {
-                policeCycle = 1;
-            }
-            if(policeCycle == 1) {
-                redPolice -= 10;
-                bluePolice += 10;
-            }
+            if(plugin.getConfiguration().getBoolean("police-smooth")) {
+                if (redPolice >= 255) {
+                    policeCycle = 1;
+                }
+                if (policeCycle == 1) {
+                    redPolice -= 10;
+                    bluePolice += 10;
+                }
 
-            if(bluePolice >= 255) {
-                policeCycle = 0;
+                if (bluePolice >= 255) {
+                    policeCycle = 0;
+                }
+                if (policeCycle == 0) {
+                    bluePolice -= 10;
+                    redPolice += 10;
+                }
+                if (redPolice > 255) redPolice = 255;
+                if (bluePolice > 255) bluePolice = 255;
+            } else {
+                if(policeCycle >= 1) {
+                    sharpPoliceCycle -= 1;
+                } else {
+                    sharpPoliceCycle += 1;
+                }
+                if(sharpPoliceCycle >= 5) {
+                    policeCycle = 1;
+                    bluePolice = 255;
+                    redPolice = 0;
+                } else if(sharpPoliceCycle <= 0){
+                    policeCycle = 0;
+                    redPolice = 255;
+                    bluePolice = 0;
+                }
             }
-            if(policeCycle == 0) {
-                bluePolice -= 10;
-                redPolice += 10;
-            }
-            if(redPolice > 255) redPolice = 255;
-            if(bluePolice > 255) bluePolice = 255;
         }, 0, 1);
     }
 

@@ -46,3 +46,4 @@ inventory:
       name: '&8» &2GRAY'
       lore:
         - '&8» &7Przechodzenie kolorow pomiedzy odcieniami szarosci'
+police-smooth: true

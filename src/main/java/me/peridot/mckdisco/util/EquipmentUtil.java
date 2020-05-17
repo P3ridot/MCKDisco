@@ -40,7 +40,7 @@ public class EquipmentUtil {
                     slot = 0;
                 }
 
-                if(!own) slot += 1;
+                if (!own) slot += 1;
             }
             packet = packetPlayOutEntityEquipmentConstructor.invoke(player.getEntityId(), slot, itemStack);
         } else {

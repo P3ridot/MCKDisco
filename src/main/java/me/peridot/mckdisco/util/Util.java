@@ -5,14 +5,13 @@ import org.bukkit.Color;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Util {
-    private static final Random RAND = new Random();
 
     public static int getRandom(int min, int max) throws IllegalArgumentException {
         Validate.isTrue(max > min, "Max can't be smaller than min!");
-        return RAND.nextInt(max - min + 1) + min;
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
     public static ItemStack createColorArmor(ItemStack item, Color color) {

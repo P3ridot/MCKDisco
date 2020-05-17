@@ -1,42 +1,76 @@
 package me.peridot.mckdisco.inventory;
 
-import api.peridot.periapi.utils.simple.ColorUtil;
+import api.peridot.periapi.inventories.InventoryContent;
+import api.peridot.periapi.inventories.items.InventoryItem;
+import api.peridot.periapi.inventories.providers.InventoryProvider;
+import api.peridot.periapi.utils.replacements.Replacement;
+import me.peridot.mckdisco.MCKDisco;
 import me.peridot.mckdisco.data.Config;
-import org.bukkit.Bukkit;
+import me.peridot.mckdisco.enums.DiscoType;
+import me.peridot.mckdisco.user.User;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 
-import java.util.HashMap;
-import java.util.Map;
+public class ArmorSelectInventory implements InventoryProvider {
 
-public class ArmorSelectInventory {
+    private final MCKDisco plugin;
 
-    public static Map<Player, Inventory> inventoryMap = new HashMap<>();
-
-    public static Inventory createInventory(Player player) {
-        Inventory inventory = inventoryMap.get(player);
-        if (inventory == null) {
-            inventory = Bukkit.createInventory(null, InventoryType.HOPPER, ColorUtil.color(Config.inventoryTitle));
-        }
-        inventoryMap.put(player, inventory);
-        inventory.clear();
-
-        if (player.hasPermission("mckdisco.random")) {
-            inventory.addItem(Config.buttonRandom);
-        }
-        if (player.hasPermission("mckdisco.smooth")) {
-            inventory.addItem(Config.buttonSmooth);
-        }
-        if (player.hasPermission("mckdisco.police")) {
-            inventory.addItem(Config.buttonPolice);
-        }
-        if (player.hasPermission("mckdisco.gray")) {
-            inventory.addItem(Config.buttonGray);
-        }
-        inventory.addItem(Config.buttonDisable);
-
-        return inventory;
+    public ArmorSelectInventory(MCKDisco plugin) {
+        this.plugin = plugin;
     }
 
+    @Override
+    public void init(Player player, InventoryContent content) {
+        Config config = plugin.getConfiguration();
+        User user = plugin.getUserCache().createUser(player);
+
+        content.clear();
+        if (player.hasPermission("mckdisco.random")) {
+            content.addItem(InventoryItem.builder()
+                    .item(config.getItemBuilder("inventory.buttons.random"))
+                    .consumer(event -> {
+                        user.setDiscoType(DiscoType.RANDOM);
+                        user.setArmor(player.getInventory().getArmorContents());
+                        plugin.getConfiguration().getLangAPI().sendMessage(player, "messages.selecteffect", new Replacement("{EFFECT}", config.getColoredString("messages.effects.random")));
+                    })
+                    .build());
+        }
+        if (player.hasPermission("mckdisco.smooth")) {
+            content.addItem(InventoryItem.builder()
+                    .item(config.getItemBuilder("inventory.buttons.smooth"))
+                    .consumer(event -> {
+                        user.setDiscoType(DiscoType.SMOOTH);
+                        plugin.getConfiguration().getLangAPI().sendMessage(player, "messages.selecteffect", new Replacement("{EFFECT}", config.getColoredString("messages.effects.smooth")));
+                    })
+                    .build());
+        }
+        if (player.hasPermission("mckdisco.police")) {
+            content.addItem(InventoryItem.builder()
+                    .item(config.getItemBuilder("inventory.buttons.police"))
+                    .consumer(event -> {
+                        user.setDiscoType(DiscoType.POLICE);
+                        plugin.getConfiguration().getLangAPI().sendMessage(player, "messages.selecteffect", new Replacement("{EFFECT}", config.getColoredString("messages.effects.police")));
+                    })
+                    .build());
+        }
+        if (player.hasPermission("mckdisco.gray")) {
+            content.addItem(InventoryItem.builder()
+                    .item(config.getItemBuilder("inventory.buttons.gray"))
+                    .consumer(event -> {
+                        user.setDiscoType(DiscoType.GRAY);
+                        plugin.getConfiguration().getLangAPI().sendMessage(player, "messages.selecteffect", new Replacement("{EFFECT}", config.getColoredString("messages.effects.gray")));
+                    })
+                    .build());
+        }
+        content.addItem(InventoryItem.builder()
+                .item(config.getItemBuilder("inventory.buttons.disable"))
+                .consumer(event -> {
+                    user.setDiscoType(null);
+                    plugin.getConfiguration().getLangAPI().sendMessage(player, "messages.disableeffect");
+                })
+                .build());
+    }
+
+    @Override
+    public void update(Player player, InventoryContent content) {
+    }
 }

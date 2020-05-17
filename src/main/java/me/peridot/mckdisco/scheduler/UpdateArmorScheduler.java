@@ -3,7 +3,7 @@ package me.peridot.mckdisco.scheduler;
 import api.peridot.periapi.packets.PacketSender;
 import me.peridot.mckdisco.MCKDisco;
 import me.peridot.mckdisco.enums.DiscoType;
-import me.peridot.mckdisco.listener.InventoryClickListener;
+import me.peridot.mckdisco.user.User;
 import me.peridot.mckdisco.util.EquipmentUtil;
 import me.peridot.mckdisco.util.Util;
 import org.bukkit.Bukkit;
@@ -24,11 +24,14 @@ public class UpdateArmorScheduler {
         EquipmentUtil equipment = new EquipmentUtil();
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                DiscoType discoType = InventoryClickListener.playerDiscoTypeMap.get(player);
+                User user = plugin.getUserCache().createUser(player);
+                DiscoType discoType = user.getDiscoType();
+
                 ItemStack helmet = null;
                 ItemStack chestplate = null;
                 ItemStack leggings = null;
                 ItemStack boots = null;
+
                 if (discoType != null) {
                     if (discoType == DiscoType.RANDOM) {
                         helmet = Util.createColorArmor(new ItemStack(Material.LEATHER_HELMET), Util.randomColor());
@@ -52,25 +55,72 @@ public class UpdateArmorScheduler {
                         boots = Util.createColorArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(ColorScheduler.grayShade, ColorScheduler.grayShade, ColorScheduler.grayShade));
                     }
                 } else {
-                    helmet = player.getInventory().getHelmet();
-                    chestplate = player.getInventory().getChestplate();
-                    leggings = player.getInventory().getLeggings();
-                    boots = player.getInventory().getBoots();
+                    ItemStack[] armor = user.getArmor();
+                    if (armor != null) {
+                        helmet = armor[3];
+                        chestplate = armor[2];
+                        leggings = armor[1];
+                        boots = armor[0];
+                    }
                 }
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    if (!player.getUniqueId().equals(onlinePlayer.getUniqueId()) || player.isSneaking()) {
-                        boolean own = player.getUniqueId().equals(onlinePlayer.getUniqueId()) && player.isSneaking();
-                        Object helmentPacket = equipment.createEquipmentPacket(player, 5, helmet, own);
-                        Object chestplatePacket = equipment.createEquipmentPacket(player, 4, chestplate, own);
-                        Object leggingsPacket = equipment.createEquipmentPacket(player, 3, leggings, own);
-                        Object bootsPacket = equipment.createEquipmentPacket(player, 2, boots, own);
-                        PacketSender.sendPacket(onlinePlayer, helmentPacket, chestplatePacket, leggingsPacket, bootsPacket);
-                    } else {
-                        Object helmentPacket = equipment.createEquipmentPacket(player, 5, player.getInventory().getHelmet(), true);
-                        Object chestplatePacket = equipment.createEquipmentPacket(player, 4, player.getInventory().getChestplate(), true);
-                        Object leggingsPacket = equipment.createEquipmentPacket(player, 3, player.getInventory().getLeggings(), true);
-                        Object bootsPacket = equipment.createEquipmentPacket(player, 2, player.getInventory().getBoots(), true);
-                        PacketSender.sendPacket(onlinePlayer, helmentPacket, chestplatePacket, leggingsPacket, bootsPacket);
+                    Object helmetPacket = null;
+                    Object chestplatePacket = null;
+                    Object leggingsPacket = null;
+                    Object bootsPacket = null;
+                    if (!onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
+                        helmetPacket = equipment.createEquipmentPacket(player, 5, helmet, false);
+                        chestplatePacket = equipment.createEquipmentPacket(player, 4, chestplate, false);
+                        leggingsPacket = equipment.createEquipmentPacket(player, 3, leggings, false);
+                        bootsPacket = equipment.createEquipmentPacket(player, 2, boots, false);
+
+                        PacketSender.sendPacket(onlinePlayer, helmetPacket, chestplatePacket, leggingsPacket, bootsPacket);
+                    }
+                }
+
+                Object helmetPacket = null;
+                Object chestplatePacket = null;
+                Object leggingsPacket = null;
+                Object bootsPacket = null;
+                if (player.isSneaking()) {
+                    if (helmet != null) {
+                        helmetPacket = equipment.createEquipmentPacket(player, 5, helmet, true);
+                    }
+                    if (chestplate != null) {
+                        chestplatePacket = equipment.createEquipmentPacket(player, 4, chestplate, true);
+                    }
+                    if (leggings != null) {
+                        leggingsPacket = equipment.createEquipmentPacket(player, 3, leggings, true);
+                    }
+                    if (boots != null) {
+                        bootsPacket = equipment.createEquipmentPacket(player, 2, boots, true);
+                    }
+
+                    PacketSender.sendPacket(player, helmetPacket, chestplatePacket, leggingsPacket, bootsPacket);
+                } else {
+                    ItemStack[] armor = user.getArmor();
+                    if (armor != null) {
+                        helmet = armor[3];
+                        chestplate = armor[2];
+                        leggings = armor[1];
+                        boots = armor[0];
+
+                        if (helmet != null) {
+                            helmetPacket = equipment.createEquipmentPacket(player, 5, helmet, true);
+                        }
+                        if (chestplate != null) {
+                            chestplatePacket = equipment.createEquipmentPacket(player, 4, chestplate, true);
+                        }
+                        if (leggings != null) {
+                            leggingsPacket = equipment.createEquipmentPacket(player, 3, leggings, true);
+                        }
+                        if (boots != null) {
+                            bootsPacket = equipment.createEquipmentPacket(player, 2, boots, true);
+                        }
+
+                        user.setArmor(player.getInventory().getArmorContents());
+
+                        PacketSender.sendPacket(player, helmetPacket, chestplatePacket, leggingsPacket, bootsPacket);
                     }
                 }
             }

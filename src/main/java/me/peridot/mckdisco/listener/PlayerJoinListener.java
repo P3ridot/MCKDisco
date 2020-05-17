@@ -1,6 +1,7 @@
 package me.peridot.mckdisco.listener;
 
 import me.peridot.mckdisco.MCKDisco;
+import me.peridot.mckdisco.user.User;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +18,8 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        InventoryClickListener.playerDiscoTypeMap.put(player, null);
+        User user = plugin.getUserCache().createUser(player);
+        user.setArmor(player.getInventory().getArmorContents());
     }
 
 }
