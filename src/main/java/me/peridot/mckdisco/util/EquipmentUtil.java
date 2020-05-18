@@ -18,7 +18,7 @@ public class EquipmentUtil {
 
 
     public EquipmentUtil() {
-        if (Reflection.serverVersionNumber >= 13) {
+        if (Reflection.serverVersionNumber >= 9) {
             enumItemSlotClass = Reflection.getMinecraftClass("EnumItemSlot");
             enumItemSlotMethod = Reflection.getMethod(enumItemSlotClass, "valueOf", String.class);
             packetPlayOutEntityEquipmentConstructor = Reflection.getConstructor(packetPlayOutEntityEquipmentClass, int.class, enumItemSlotClass, itemStackClass);
