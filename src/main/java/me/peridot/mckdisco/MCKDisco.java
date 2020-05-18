@@ -5,7 +5,6 @@ import me.peridot.mckdisco.bstats.bukkit.Metrics;
 import me.peridot.mckdisco.commands.DiscoCommand;
 import me.peridot.mckdisco.data.Config;
 import me.peridot.mckdisco.inventory.InventoryManager;
-import me.peridot.mckdisco.listener.PlayerJoinListener;
 import me.peridot.mckdisco.listener.PlayerToggleSneakListener;
 import me.peridot.mckdisco.scheduler.ColorScheduler;
 import me.peridot.mckdisco.scheduler.UpdateArmorScheduler;
@@ -35,7 +34,6 @@ public class MCKDisco extends JavaPlugin {
         userCache = new UserCache();
 
         PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new PlayerJoinListener(this), this);
         pluginManager.registerEvents(new PlayerToggleSneakListener(this), this);
 
         getCommand("disco").setExecutor(new DiscoCommand(this));

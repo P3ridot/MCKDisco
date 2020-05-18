@@ -29,7 +29,6 @@ public class ArmorSelectInventory implements InventoryProvider {
                     .item(config.getItemBuilder("inventory.buttons.random"))
                     .consumer(event -> {
                         user.setDiscoType(DiscoType.RANDOM);
-                        user.setArmor(player.getInventory().getArmorContents());
                         plugin.getConfiguration().getLangAPI().sendMessage(player, "messages.selecteffect", new Replacement("{EFFECT}", config.getColoredString("messages.effects.random")));
                     })
                     .build());

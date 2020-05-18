@@ -23,8 +23,10 @@ public class PlayerToggleSneakListener implements Listener {
         Player player = event.getPlayer();
         User user = plugin.getUserCache().createUser(player);
 
-        if (event.isSneaking() && !player.isSneaking()) {
+        if (event.isSneaking()) {
             user.setArmor(player.getInventory().getArmorContents());
+        } else {
+            user.setRealArmorPacket(true);
         }
     }
 

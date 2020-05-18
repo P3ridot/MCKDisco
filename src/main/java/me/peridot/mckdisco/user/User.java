@@ -11,6 +11,7 @@ public class User {
 
     private DiscoType discoType;
     private ItemStack[] armor;
+    private boolean realArmorPacket;
 
     public User(UUID uuid) {
         this.uuid = uuid;
@@ -34,5 +35,13 @@ public class User {
 
     public void setArmor(ItemStack[] armor) {
         this.armor = armor;
+    }
+
+    public boolean isRealArmorPacket() {
+        return realArmorPacket;
+    }
+
+    public void setRealArmorPacket(boolean realArmorPacket) {
+        this.realArmorPacket = realArmorPacket;
     }
 }

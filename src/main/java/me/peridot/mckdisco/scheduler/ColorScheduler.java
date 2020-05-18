@@ -5,19 +5,16 @@ import org.bukkit.Bukkit;
 
 public class ColorScheduler {
 
-    private final MCKDisco plugin;
-
     public static int redSmooth = 255;
     public static int greenSmooth = 0;
     public static int blueSmooth = 0;
-
     public static int grayShade = 0;
     public static int grayShadeCycle = 0;
-
     public static int policeCycle = 0;
     public static int sharpPoliceCycle = 0;
     public static int redPolice = 255;
     public static int bluePolice = 0;
+    private final MCKDisco plugin;
 
     public ColorScheduler(MCKDisco plugin) {
         this.plugin = plugin;
@@ -55,7 +52,7 @@ public class ColorScheduler {
             }
 
             //POLICE
-            if(plugin.getConfiguration().getBoolean("police-smooth")) {
+            if (plugin.getConfiguration().getBoolean("police-smooth")) {
                 if (redPolice >= 255) {
                     policeCycle = 1;
                 }
@@ -74,16 +71,16 @@ public class ColorScheduler {
                 if (redPolice > 255) redPolice = 255;
                 if (bluePolice > 255) bluePolice = 255;
             } else {
-                if(policeCycle >= 1) {
+                if (policeCycle >= 1) {
                     sharpPoliceCycle -= 1;
                 } else {
                     sharpPoliceCycle += 1;
                 }
-                if(sharpPoliceCycle >= 5) {
+                if (sharpPoliceCycle >= 5) {
                     policeCycle = 1;
                     bluePolice = 255;
                     redPolice = 0;
-                } else if(sharpPoliceCycle <= 0){
+                } else if (sharpPoliceCycle <= 0) {
                     policeCycle = 0;
                     redPolice = 255;
                     bluePolice = 0;
