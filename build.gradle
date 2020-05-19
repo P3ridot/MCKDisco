@@ -19,6 +19,6 @@ repositories {
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
-    compile "com.github.P3ridot:periApi:01cd4d00c0"
-    compileOnly fileTree(include: ['*.jar'], dir: 'libs')
+    compile "com.github.P3ridot:periAPI:9e3cf0da68"
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 }
