@@ -1,12 +1,18 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+}
+
 group 'me.peridot.mckdisco'
-version '1.2'
+version '1.2.1'
 
 apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.8
 
-jar{
-    from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+shadowJar {
+    mergeServiceFiles()
+    relocate 'api.peridot.periapi', 'me.peridot.mckdisco.libs.periapi'
 }
 
 repositories {
@@ -19,6 +25,5 @@ repositories {
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
-    compile "com.github.P3ridot:periAPI:9e3cf0da68"
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "com.github.P3ridot:periAPI:fde0ad8d71"
 }
