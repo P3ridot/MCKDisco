@@ -25,5 +25,5 @@ repositories {
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
-    compile "com.github.P3ridot:periAPI:8d3832dcf8"
+    compile "com.github.P3ridot:periAPI:ac62407f93"
 }
